@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="UTF-8">
+  <title>Sika-noppapeli</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Sika-noppapeli 🎲</h1>
+
+  <div id="game">
+    <div id="player-info">
+      <p>Pelaaja 1: <span id="player1-name">Pelaaja 1</span> | Pisteet: <span id="score1">0</span></p>
+      <p>Pelaaja 2: <span id="player2-name">Pelaaja 2</span> | Pisteet: <span id="score2">0</span></p>
+      <p>Nykyinen vuoro: <span id="current-player">Pelaaja 1</span></p>
+    </div>
+
+    <div id="dice-area">
+      <p>Nopan tulos: <span id="dice-result">-</span></p>
+      <p>Kierroksen pisteet: <span id="turn-score">0</span></p>
+      <button id="roll-btn">Heitä noppaa 🎲</button>
+      <button id="hold-btn">Lopeta vuoro ✋</button>
+    </div>
+
+    <div id="winner"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
