@@ -15,9 +15,11 @@ const currentPlayerNameEl = document.getElementById("current-player-name");
 const diceResultEl = document.getElementById("dice-result");
 const turnScoreEl = document.getElementById("turn-score");
 const winnerEl = document.getElementById("winner");
+const backBtn = document.getElementById("back-btn");
 
 document.getElementById("roll-btn").addEventListener("click", rollDice);
 document.getElementById("hold-btn").addEventListener("click", holdTurn);
+document.getElementById("back-btn").addEventListener("click", backToSetup);
 playerCountInput.addEventListener("change", updateNameInputs);
 startBtn.addEventListener("click", startGame);
 
@@ -130,4 +132,17 @@ function nextPlayer() {
 function disableGame() {
   document.getElementById("roll-btn").disabled = true;
   document.getElementById("hold-btn").disabled = true;
+}
+
+function backToSetup() {
+  setupScreen.style.display = "block";
+  gameScreen.style.display = "none";
+  players = [];
+  scores = [];
+  currentPlayerIndex = 0;
+  turnScore = 0;
+  previousDoubles = 0;
+  winnerEl.textContent = "";
+  document.getElementById("roll-btn").disabled = false;
+  document.getElementById("hold-btn").disabled = false;
 }

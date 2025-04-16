@@ -34,6 +34,11 @@ body {
     color: white;
   }
   
+  #back-btn {
+    background-color: #2196f3;
+    color: white;
+  }
+  
   #winner {
     margin-top: 1rem;
     font-size: 1.2rem;
