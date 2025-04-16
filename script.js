@@ -1,54 +1,133 @@
-let currentPlayer = 1;
-let scores = [0, 0];
+let players = [];
+let scores = [];
+let currentPlayerIndex = 0;
 let turnScore = 0;
+let diceMode = 1;
+let previousDoubles = 0;
 
-const score1El = document.getElementById('score1');
-const score2El = document.getElementById('score2');
-const currentPlayerEl = document.getElementById('current-player');
-const diceResultEl = document.getElementById('dice-result');
-const turnScoreEl = document.getElementById('turn-score');
-const winnerEl = document.getElementById('winner');
+const playerCountInput = document.getElementById("player-count");
+const nameInputsDiv = document.getElementById("name-inputs");
+const startBtn = document.getElementById("start-btn");
+const setupScreen = document.getElementById("setup-screen");
+const gameScreen = document.getElementById("game-screen");
+const scoreboard = document.getElementById("scoreboard");
+const currentPlayerNameEl = document.getElementById("current-player-name");
+const diceResultEl = document.getElementById("dice-result");
+const turnScoreEl = document.getElementById("turn-score");
+const winnerEl = document.getElementById("winner");
 
-document.getElementById('roll-btn').addEventListener('click', () => {
-  const dice = Math.floor(Math.random() * 6) + 1;
-  diceResultEl.textContent = dice;
+document.getElementById("roll-btn").addEventListener("click", rollDice);
+document.getElementById("hold-btn").addEventListener("click", holdTurn);
+playerCountInput.addEventListener("change", updateNameInputs);
+startBtn.addEventListener("click", startGame);
 
-  if (dice === 1) {
-    turnScore = 0;
-    turnScoreEl.textContent = turnScore;
-    nextPlayer();
-  } else {
-    turnScore += dice;
-    turnScoreEl.textContent = turnScore;
+updateNameInputs();
+
+function updateNameInputs() {
+  const count = parseInt(playerCountInput.value);
+  nameInputsDiv.innerHTML = "";
+  for (let i = 0; i < count; i++) {
+    nameInputsDiv.innerHTML += `
+      <input type="text" placeholder="Pelaaja ${i + 1} nimi" id="name-${i}" required><br>
+    `;
   }
-});
+}
 
-document.getElementById('hold-btn').addEventListener('click', () => {
-  scores[currentPlayer - 1] += turnScore;
+function startGame() {
+  const count = parseInt(playerCountInput.value);
+  players = [];
+  scores = [];
+  for (let i = 0; i < count; i++) {
+    const name = document.getElementById(`name-${i}`).value || `Pelaaja ${i + 1}`;
+    players.push(name);
+    scores.push(0);
+  }
+
+  const selectedMode = document.querySelector('input[name="dice-mode"]:checked').value;
+  diceMode = parseInt(selectedMode);
+
+  setupScreen.style.display = "none";
+  gameScreen.style.display = "block";
+  updateScoreboard();
+  updateTurnInfo();
+}
+
+function updateScoreboard() {
+  scoreboard.innerHTML = players.map((name, index) => {
+    return `<p>${name}: ${scores[index]} pistettä</p>`;
+  }).join("");
+}
+
+function updateTurnInfo() {
+  currentPlayerNameEl.textContent = players[currentPlayerIndex];
+  turnScoreEl.textContent = turnScore;
+  diceResultEl.textContent = "-";
+}
+
+function rollDice() {
+  let dice1 = Math.floor(Math.random() * 6) + 1;
+  let dice2 = diceMode === 2 ? Math.floor(Math.random() * 6) + 1 : null;
+
+  if (diceMode === 1) {
+    diceResultEl.textContent = dice1;
+
+    if (dice1 === 1) {
+      turnScore = 0;
+      nextPlayer();
+    } else {
+      turnScore += dice1;
+    }
+
+  } else {
+    diceResultEl.textContent = `${dice1} & ${dice2}`;
+
+    if (dice1 === 1 && dice2 === 1) {
+      turnScore += 25;
+      previousDoubles = 0;
+    } else if (dice1 === 1 || dice2 === 1) {
+      turnScore = 0;
+      previousDoubles = 0;
+      nextPlayer();
+      return;
+    } else if (dice1 === dice2) {
+      turnScore += (dice1 + dice2) * 2;
+      previousDoubles++;
+      if (previousDoubles === 3) {
+        turnScore = 0;
+        previousDoubles = 0;
+        nextPlayer();
+        return;
+      }
+    } else {
+      turnScore += dice1 + dice2;
+      previousDoubles = 0;
+    }
+  }
+
+  turnScoreEl.textContent = turnScore;
+}
+
+function holdTurn() {
+  scores[currentPlayerIndex] += turnScore;
   turnScore = 0;
-  updateScores();
+  previousDoubles = 0;
 
-  if (scores[currentPlayer - 1] >= 100) {
-    winnerEl.textContent = `🎉 Pelaaja ${currentPlayer} voitti pelin!`;
-    disableButtons();
-  } else {
-    nextPlayer();
+  if (scores[currentPlayerIndex] >= 100) {
+    winnerEl.textContent = `🎉 ${players[currentPlayerIndex]} voitti pelin!`;
+    disableGame();
+    return;
   }
-});
+
+  nextPlayer();
+}
 
 function nextPlayer() {
-  currentPlayer = currentPlayer === 1 ? 2 : 1;
-  currentPlayerEl.textContent = `Pelaaja ${currentPlayer}`;
-  turnScoreEl.textContent = 0;
-  diceResultEl.textContent = '-';
+  currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+  updateScoreboard();
+  updateTurnInfo();
 }
 
-function updateScores() {
-  score1El.textContent = scores[0];
-  score2El.textContent = scores[1];
-}
-
-function disableButtons() {
-  document.getElementById('roll-btn').disabled = true;
-  document.getElementById('hold-btn').disabled = true;
+function disableGame() {
+  document.getElementById("roll-btn").disabled = true;
+  document.getElementById("hold-btn").disabled = true;
 }

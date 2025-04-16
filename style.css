@@ -1,16 +1,18 @@
 body {
     font-family: sans-serif;
     text-align: center;
-    background-color: #f8f8f8;
+    background-color: #f0f0f0;
     padding: 2rem;
   }
   
-  #game {
+  #game-screen, #setup-screen {
     background: white;
     display: inline-block;
     padding: 2rem;
     border-radius: 12px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    width: 90%;
+    max-width: 600px;
   }
   
   button {
@@ -37,5 +39,9 @@ body {
     font-size: 1.2rem;
     font-weight: bold;
     color: #2196f3;
+  }
+  
+  #scoreboard {
+    margin-bottom: 1rem;
   }
   
