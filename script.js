@@ -127,6 +127,7 @@ function nextPlayer() {
   currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
   updateScoreboard();
   updateTurnInfo();
+  showTurnNotification();  // Näytä vuoron vaihdon ilmoitus
 }
 
 function disableGame() {
@@ -146,3 +147,23 @@ function backToSetup() {
   document.getElementById("roll-btn").disabled = false;
   document.getElementById("hold-btn").disabled = false;
 }
+
+function showTurnNotification() {
+  const notification = document.getElementById("turn-notification");
+  const message = document.getElementById("notification-message");
+
+  message.textContent = `Vuoro siirtyi pelaajalle: ${players[currentPlayerIndex]}`;
+  
+  notification.style.display = "block";
+  setTimeout(() => {
+    notification.classList.add("show");
+  }, 10); // Pieni viive animaation aloittamiseksi
+
+  setTimeout(() => {
+    notification.classList.remove("show");
+    setTimeout(() => {
+      notification.style.display = "none";
+    }, 300); // Odotetaan animaation loppumista ennen piilottamista
+  }, 2000); // Näytetään 2 sekuntia
+}
+
