@@ -4,6 +4,7 @@ let currentPlayerIndex = 0;
 let turnScore = 0;
 let diceMode = 1;
 let previousDoubles = 0;
+let hasRolled = false;
 
 const playerCountInput = document.getElementById("player-count");
 const nameInputsDiv = document.getElementById("name-inputs");
@@ -16,10 +17,11 @@ const diceResultEl = document.getElementById("dice-result");
 const turnScoreEl = document.getElementById("turn-score");
 const winnerEl = document.getElementById("winner");
 const backBtn = document.getElementById("back-btn");
+const holdBtn = document.getElementById("hold-btn");
 
 document.getElementById("roll-btn").addEventListener("click", rollDice);
-document.getElementById("hold-btn").addEventListener("click", holdTurn);
-document.getElementById("back-btn").addEventListener("click", backToSetup);
+holdBtn.addEventListener("click", holdTurn);
+backBtn.addEventListener("click", backToSetup);
 playerCountInput.addEventListener("change", updateNameInputs);
 startBtn.addEventListener("click", startGame);
 
@@ -64,9 +66,14 @@ function updateTurnInfo() {
   currentPlayerNameEl.textContent = players[currentPlayerIndex];
   turnScoreEl.textContent = turnScore;
   diceResultEl.textContent = "-";
+  hasRolled = false;
+  holdBtn.style.display = "none"; // Piilota lopeta-nappi kunnes heitetään
 }
 
 function rollDice() {
+  hasRolled = true;
+  holdBtn.style.display = "inline-block"; // Näytä lopeta-nappi kun heitetty
+
   let dice1 = Math.floor(Math.random() * 6) + 1;
   let dice2 = diceMode === 2 ? Math.floor(Math.random() * 6) + 1 : null;
 
@@ -110,6 +117,8 @@ function rollDice() {
 }
 
 function holdTurn() {
+  if (!hasRolled) return; // Estä lopetus ilman heittoa
+
   scores[currentPlayerIndex] += turnScore;
   turnScore = 0;
   previousDoubles = 0;
@@ -127,12 +136,12 @@ function nextPlayer() {
   currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
   updateScoreboard();
   updateTurnInfo();
-  showTurnNotification();  // Näytä vuoron vaihdon ilmoitus
+  showTurnNotification();
 }
 
 function disableGame() {
   document.getElementById("roll-btn").disabled = true;
-  document.getElementById("hold-btn").disabled = true;
+  holdBtn.disabled = true;
 }
 
 function backToSetup() {
@@ -143,9 +152,11 @@ function backToSetup() {
   currentPlayerIndex = 0;
   turnScore = 0;
   previousDoubles = 0;
+  hasRolled = false;
   winnerEl.textContent = "";
   document.getElementById("roll-btn").disabled = false;
-  document.getElementById("hold-btn").disabled = false;
+  holdBtn.disabled = false;
+  holdBtn.style.display = "inline-block";
 }
 
 function showTurnNotification() {
@@ -153,17 +164,16 @@ function showTurnNotification() {
   const message = document.getElementById("notification-message");
 
   message.textContent = `Vuoro siirtyi pelaajalle: ${players[currentPlayerIndex]}`;
-  
+
   notification.style.display = "block";
   setTimeout(() => {
     notification.classList.add("show");
-  }, 10); // Pieni viive animaation aloittamiseksi
+  }, 10);
 
   setTimeout(() => {
     notification.classList.remove("show");
     setTimeout(() => {
       notification.style.display = "none";
-    }, 300); // Odotetaan animaation loppumista ennen piilottamista
-  }, 2000); // Näytetään 2 sekuntia
+    }, 300);
+  }, 2000);
 }
-
